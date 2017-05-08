@@ -1,0 +1,26 @@
+{
+    "name": "MMM-SG-Transport",
+    "version": "0.1",
+    "description": "MagicMirror² module - Local Transport for Singapore",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/xuanyou/MMM-SG-Transport.git"
+    },
+    "keywords": [
+        "MagicMirror",
+        "SG-Transport",
+        "magic mirror",
+        "smart mirror",
+        "public transport",
+        "local transit"
+    ],
+    "author": "Xuan You",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/xuanyou/MMM-SG-Transport/issues"
+    },
+    "homepage": "https://github.com/xuanyou/MMM-SG-Transport#readme",
+    "dependencies": {
+        "request": "^2.74.0"
+    }
+}
