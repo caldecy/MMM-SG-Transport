@@ -14,45 +14,56 @@ Module.register("MMM-SG-Transport", {
         lta_api_key: null, // this must be set
         lta_api_url: "http://datamall2.mytransport.sg/ltaodataservice/",
         lta_api_bus_arrival_path: "BusArrival",
-        lta_api_bus_stops_path: "BusStops",
 
         // Intervals
-        display_refresh_interval: 2 * 1000, // refresh display every 2 seconds
-        api_download_interval: 4 * 1000, // download api every 4 seconds
+        refresh_interval: 1 * 1000, // refresh display every 1 seconds
 
         // bus stop ids to show
-        bus_stop_ids: [
-            43191
+        bus_stops: [{
+                id: 43191,
+                name: "Opp St Mary's"
+            },
+            {
+                id: 43619,
+                name: "Opp Caltex"
+            }
         ],
     },
 
     // Module startup procedure
     start: function() {
 
-        Log.log("Starting module: " + this.name);
-
         // Share the config with the node_helper
         this.sendSocketNotification('CONFIG', this.config);
-
-        this.bus_stops = [];
     },
 
     // Override dom generator.
     getDom: function() {
-        Log.log('Creating DOM')
-        var wrapper = document.createElement("div");
-        if (!this.time) {
-            wrapper.innerHTML = "Loading...";
-        } else {
-            wrapper.innerHTML = this.time;
+
+        if (!this.bus_stops) {
+            var wrapper = document.createElement("div");
+            wrapper.innerHTML = "Waiting for update...";
+            return wrapper;
         }
+
+        // Display data
+        var wrapper = document.createElement("table");
+        wrapper.classList.add("small");
+        for (var bus_stop_id in this.bus_stops) {
+            var row = document.createElement("tr");
+            var element = document.createElement("td");
+            element.innerHTML = this.bus_stops[bus_stop_id].name;
+            row.appendChild(element);
+            wrapper.appendChild(row);
+        }
+
         return wrapper;
     },
 
     socketNotificationReceived: function(notification, payload) {
-        Log.log('Notification Received')
-        if (notification === 'UPDATE_TIME') {
-            this.time = payload.date;
+
+        if (notification === "UPDATE") {
+            this.bus_stops = payload;
         }
         this.updateDom();
     }
