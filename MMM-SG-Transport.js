@@ -16,9 +16,9 @@ Module.register("MMM-SG-Transport", {
         lta_api_bus_arrival_path: "BusArrival",
 
         // Intervals
-        refresh_interval: 1 * 1000, // refresh display every 1 seconds
+        refresh_interval: 10 * 1000, // refresh display every 10 seconds
 
-        // bus stop ids to show
+        // Bus Stop IDs and Names to show
         bus_stops: [{
                 id: 43191,
                 name: "Opp St Mary's"
@@ -32,6 +32,16 @@ Module.register("MMM-SG-Transport", {
 
     // Module startup procedure
     start: function() {
+
+        // Create the main structure that holds the live bus stop data
+        this.bus_stops = {}
+        for (var i in this.config.bus_stops) {
+            var config_bus_stop = this.config.bus_stops[i];
+            this.bus_stops[config_bus_stop.id] = {
+                Name: config_bus_stop.name,
+                Services: {}
+            };
+        }
 
         // Share the config with the node_helper
         this.sendSocketNotification('CONFIG', this.config);
@@ -55,6 +65,12 @@ Module.register("MMM-SG-Transport", {
             element.innerHTML = this.bus_stops[bus_stop_id].name;
             row.appendChild(element);
             wrapper.appendChild(row);
+
+            var row = document.createElement("tr");
+            var element = document.createElement("td");
+            element.innerHTML = JSON.stringify(this.bus_stops[bus_stop_id].Services);
+            row.appendChild(element);
+            wrapper.appendChild(row);
         }
 
         return wrapper;
@@ -63,7 +79,7 @@ Module.register("MMM-SG-Transport", {
     socketNotificationReceived: function(notification, payload) {
 
         if (notification === "UPDATE") {
-            this.bus_stops = payload;
+            this.bus_stops[payload.BusStopID].Services = payload.Services;
         }
         this.updateDom();
     }
