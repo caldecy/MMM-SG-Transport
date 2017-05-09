@@ -7,7 +7,6 @@
         "type": "node",
         "request": "launch",
         "name": "Launch MagicMirror serveronly",
-        // This configuration enables launch from vscode, but breakpoints in modules are not possible.
         "program": "${workspaceRoot}/../../serveronly/index.js",
         "cwd": "${workspaceRoot}"
     }]
