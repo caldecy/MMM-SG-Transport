@@ -39,46 +39,107 @@ Module.register("MMM-SG-Transport", {
             var config_bus_stop = this.config.bus_stops[i];
             this.bus_stops[config_bus_stop.id] = {
                 Name: config_bus_stop.name,
-                Services: {}
+                Services: null
             };
         }
 
         // Share the config with the node_helper
-        this.sendSocketNotification('CONFIG', this.config);
+        this.sendSocketNotification("CONFIG", this.config);
     },
 
-    // Override dom generator.
-    getDom: function() {
+    // Include styles:
+    getStyles: function() {
+        return [
+            this.file("css/style.css")
+        ]
+    },
 
-        if (!this.bus_stops) {
-            var wrapper = document.createElement("div");
-            wrapper.innerHTML = "Waiting for update...";
-            return wrapper;
+    createBusStopLabelRow: function(label) {
+        var row = document.createElement("tr");
+        row.classList.add("sg-transport-bus-stop-label-row");
+        var element = document.createElement("th");
+        element.classList.add("sg-transport-bus-stop-label");
+        element.setAttribute("colspan", 4);
+        element.innerHTML = label;
+        row.appendChild(element);
+        return row;
+    },
+
+    createBusRow: function(bus) {
+
+        // Calculate arrival times
+        ArrivalTimeArray = [];
+        if (bus.NextBus.EstimatedArrival !== "") {
+            ArrivalTimeArray.push(bus.NextBus.EstimatedArrival);
+        }
+        if (bus.SubsequentBus.EstimatedArrival !== "") {
+            ArrivalTimeArray.push(bus.SubsequentBus.EstimatedArrival);
+        }
+        if (bus.SubsequentBus3.EstimatedArrival !== "") {
+            ArrivalTimeArray.push(bus.SubsequentBus3.EstimatedArrival);
         }
 
-        // Display data
-        var wrapper = document.createElement("table");
-        wrapper.classList.add("small");
-        for (var bus_stop_id in this.bus_stops) {
-            var row = document.createElement("th");
+        // Don't display if no data
+        if (ArrivalTimeArray.length == 0) {
+            return document.createElement("div");
+        }
+
+        var row = document.createElement("tr");
+        var element = document.createElement("td");
+        element.innerHTML = bus.ServiceNo + ":&nbsp;"
+        row.appendChild(element);
+
+        ArrivalTimeArray.forEach(function(ArrivalTime) {
+            var time = new Date(ArrivalTime);
+            var now = new Date();
+            var arrivalTimeInMinutes = Math.floor((time - now) / (60 * 1000));
+            if (arrivalTimeInMinutes < 1) {
+                arrivalTimeInMinutes = "Arr"
+            } else {
+                arrivalTimeInMinutes += "m&nbsp;"
+            }
+
             var element = document.createElement("td");
-            element.innerHTML = this.bus_stops[bus_stop_id].Name;
+            element.innerHTML = arrivalTimeInMinutes;
             row.appendChild(element);
-            wrapper.appendChild(row);
+        });
 
-            this.bus_stops[bus_stop_id].Services.forEach(function(bus) {
-                var row = document.createElement("tr");
-                var element = document.createElement("td");
-                element.innerHTML = bus.ServiceNo
-                row.appendChild(element);
-                var element = document.createElement("td");
-                var time = new Date(bus.NextBus.EstimatedArrival);
-                element.innerHTML = time.toLocaleTimeString();
-                row.appendChild(element);
-                wrapper.appendChild(row);
-            });
+
+        return row;
+    },
+
+    createTextRow: function(text) {
+        var row = document.createElement("tr");
+        var element = document.createElement("td");
+        element.innerHTML = text;
+        row.appendChild(element);
+        return row;
+    },
+
+    // Run on display refresh
+    getDom: function() {
+        // Display data
+        var wrapper = document.createElement("div");
+        wrapper.classList.add("small");
+
+        var table = document.createElement("table");
+        for (var bus_stop_id in this.bus_stops) {
+
+            var self = this;
+
+            table.appendChild(this.createBusStopLabelRow(this.bus_stops[bus_stop_id].Name));
+
+            var services = this.bus_stops[bus_stop_id].Services;
+
+            if (services == null) {
+                table.appendChild(this.createTextRow("Waiting for update..."));
+            } else {
+                services.forEach(function(bus) {
+                    table.appendChild(self.createBusRow(bus));
+                });
+            }
         }
-
+        wrapper.appendChild(table);
         return wrapper;
     },
 

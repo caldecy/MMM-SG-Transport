@@ -1,7 +1,7 @@
 // This node helper is in charge of requesting the data through the API.
 
 var NodeHelper = require("node_helper");
-var unirest = require("unirest")
+var unirest = require("unirest");
 
 module.exports = NodeHelper.create({
 
@@ -40,6 +40,9 @@ module.exports = NodeHelper.create({
             setInterval(function() {
                 self.updateData();
             }, this.config.refresh_interval);
+
+            // Start the first update
+            this.updateData();
         }
     }
 });
