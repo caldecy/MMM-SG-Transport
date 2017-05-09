@@ -21,7 +21,6 @@
     },
     "homepage": "https://github.com/xuanyou/MMM-SG-Transport#readme",
     "dependencies": {
-        "moment": "^2.14.0",
         "unirest": "^0.5.1"
     }
 }
