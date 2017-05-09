@@ -16,7 +16,7 @@ module.exports = NodeHelper.create({
         // For each bus stop
         this.BusStopList.forEach(function(bus_stop_id) {
             // Request for new bus timings    
-            unirest.get(self.config.lta_api_url + self.config.lta_api_bus_arrival_path + "?BusStopID=" + bus_stop_id)
+            unirest.get(self.config.lta_api_url + self.config.lta_api_bus_arrival_path + "?SST=True&BusStopID=" + bus_stop_id)
                 .headers({ "AccountKey": self.config.lta_api_key })
                 .end(function(response) {
                     self.sendSocketNotification("UPDATE", response.body);
