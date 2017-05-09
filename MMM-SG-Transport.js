@@ -60,17 +60,23 @@ Module.register("MMM-SG-Transport", {
         var wrapper = document.createElement("table");
         wrapper.classList.add("small");
         for (var bus_stop_id in this.bus_stops) {
-            var row = document.createElement("tr");
+            var row = document.createElement("th");
             var element = document.createElement("td");
-            element.innerHTML = this.bus_stops[bus_stop_id].name;
+            element.innerHTML = this.bus_stops[bus_stop_id].Name;
             row.appendChild(element);
             wrapper.appendChild(row);
 
-            var row = document.createElement("tr");
-            var element = document.createElement("td");
-            element.innerHTML = JSON.stringify(this.bus_stops[bus_stop_id].Services);
-            row.appendChild(element);
-            wrapper.appendChild(row);
+            this.bus_stops[bus_stop_id].Services.forEach(function(bus) {
+                var row = document.createElement("tr");
+                var element = document.createElement("td");
+                element.innerHTML = bus.ServiceNo
+                row.appendChild(element);
+                var element = document.createElement("td");
+                var time = new Date(bus.NextBus.EstimatedArrival);
+                element.innerHTML = time.toLocaleTimeString();
+                row.appendChild(element);
+                wrapper.appendChild(row);
+            });
         }
 
         return wrapper;
