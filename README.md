@@ -1,6 +1,10 @@
 # MMM-SG-Transport
 MagicMirror² Module - Local Transport in Singapore
 
+**Broken as at 31 Oct 2017, does not support LTA DataMall v2 API.**
+
+**LTA DataMall v1 API was deprecated on 1 Aug 2017**
+
 This module displays data about bus arrivals. More than one bus stop can be specified.
 
 This module aims to provide the most compact display possible with multiple bus stops.
